@@ -52,7 +52,7 @@ def main():
                         help='Number of epochs to update the learning rate.')
     parser.add_argument('--workers', default=8, type=int,
                         help='Number of data loader workers.')
-    parser.add_argument('--log_step', default=5, type=int,
+    parser.add_argument('--log_step', default=10, type=int,
                         help='Number of steps to print and record the log.')
     parser.add_argument('--val_step', default=50, type=int,
                         help='Number of steps to run validation.')
@@ -203,6 +203,7 @@ def train(opt, train_loader, model, epoch, val_loader):
         # validate at every val_step
         if model.Eiters % opt.val_step == 0:
             validate(opt, val_loader, model)
+            model.train_start()
 
 
 def validate(opt, val_loader, model):
