@@ -280,8 +280,7 @@ def collate_fn(data):
     targets = torch.zeros(len(captions), max(lengths)).long()
     for i, cap in enumerate(captions):
         end = lengths[i]
-        cap_tensor = torch.tensor(cap[:end], dtype=torch.long)
-        targets[i, :end] = cap_tensor
+        targets[i, :end] = torch.Tensor(cap[:end])
 
     return images, targets, lengths, ids
 
