@@ -111,8 +111,7 @@ def main():
     print("data load")
     # Construct the model
     model = VSE(opt)
-    total_params = sum(p.numel() for p in model.parameters())
-    print("model num of params :", total_params)
+
     print("model made")
     # optionally resume from a checkpoint
     if opt.resume:
