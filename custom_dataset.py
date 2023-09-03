@@ -65,6 +65,7 @@ class CustomDatasetBert(data.Dataset):
             vocab: vocabulary wrapper.
             transform: transformer for image.
         """
+        print("custom dataset")
         image_root = '/content/drive/MyDrive/images'
         json_root = '/content/drive/MyDrive/data_temp/data_list.pickle'
         
@@ -101,8 +102,10 @@ class CustomDatasetBert(data.Dataset):
         ann_ids, anns, path, image = self.get_raw_item(index)
         if self.transform is not None:
             image = self.transform(image)
-        #anns = [process_caption_bert(ann, self.tokenizer, self.drop_prob, self.train) for ann in anns]
-        anns = [tokenize(ann, vocab, self.drop_prob) for ann in anns]
+        ###anns = [process_caption_bert(ann, self.tokenizer, self.drop_prob, self.train) for ann in anns]
+        
+        #anns = [tokenize(ann, vocab, self.drop_prob) for ann in anns]
+        anns = tokenize(anns,vocab,self.drop_prob)
         
         return image, anns, index, ann_ids
 
@@ -122,7 +125,7 @@ class CustomDatasetBert(data.Dataset):
         anns = self.get_annotations(self.json_list , index)
         #if self.val:
         #    anns = [anns[random.randint(0,1)]] #validation은 image<->text가 1개만 mapping
-        #anns = [anns[1]] #Only use text 
+        anns = [anns[0]] #Only use text 
         
         ann_ids = len(anns)
         
