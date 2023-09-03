@@ -36,7 +36,7 @@ def main():
                         help='Number of training epochs.')
     parser.add_argument('--batch_size', default=128, type=int,
                         help='Size of a training mini-batch.')
-    parser.add_argument('--word_dim', default=300, type=int,
+    parser.add_argument('--word_dim', default=768, type=int, #
                         help='Dimensionality of the word embedding.')
     parser.add_argument('--embed_size', default=1024, type=int,
                         help='Dimensionality of the joint embedding.')
@@ -66,7 +66,7 @@ def main():
                         help='Dimensionality of the image embedding.')
     parser.add_argument('--finetune', action='store_true',
                         help='Fine-tune the image encoder.')
-    parser.add_argument('--cnn_type', default='vgg19',
+    parser.add_argument('--cnn_type', default='resnet152', #
                         help="""The CNN used for image encoder
                         (e.g. vgg19, resnet152)""")
     parser.add_argument('--use_restval', action='store_true',
@@ -151,6 +151,7 @@ def main():
             'Eiters': model.Eiters,
         }, is_best, prefix=opt.logger_name + '/')
 
+from tqdm import tqdm
 
 def train(opt, train_loader, model, epoch, val_loader):
     # average meters to record the training statistics
@@ -162,7 +163,7 @@ def train(opt, train_loader, model, epoch, val_loader):
     model.train_start()
 
     end = time.time()
-    for i, train_data in enumerate(train_loader):
+    for i, train_data in tqdm(enumerate(train_loader)):
         if opt.reset_train:
             # Always reset to train mode, this is not the default behavior
             model.train_start()

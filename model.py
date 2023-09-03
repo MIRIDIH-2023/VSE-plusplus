@@ -383,3 +383,6 @@ class VSE(object):
         if self.grad_clip > 0:
             clip_grad_norm(self.params, self.grad_clip)
         self.optimizer.step()
+        
+        if(self.Eiters%10==0):
+            print(loss)

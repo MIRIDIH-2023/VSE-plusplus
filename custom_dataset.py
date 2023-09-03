@@ -47,6 +47,8 @@ def tokenize(sentence, vocab, drop_prob):
     else:
         #tokens = nltk.tokenize.word_tokenize(str(sentence).lower().decode('utf-8'))
         tokens = TOKENIZER.tokenize(text=str(sentence).lower().decode('utf-8'))
+    if(len(tokens)>500):
+        tokens = tokens[:500] #너무 긴거 규제
     
     return torch.Tensor(
         [vocab('<start>')] + caption_augmentation(tokens) + [vocab('<end>')]
