@@ -278,8 +278,10 @@ def collate_fn(data):
     # Merget captions (convert tuple of 1D tensor to 2D tensor)
     lengths = [len(cap) for cap in captions]
     targets = torch.zeros(len(captions), max(lengths)).long()
+    print(targets.size())
     for i, cap in enumerate(captions):
         end = lengths[i]
+        print(cap.size())
         targets[i, :end] = torch.Tensor(cap[:end])
 
     return images, targets, lengths, ids
