@@ -52,9 +52,9 @@ def main():
                         help='Number of epochs to update the learning rate.')
     parser.add_argument('--workers', default=8, type=int,
                         help='Number of data loader workers.')
-    parser.add_argument('--log_step', default=10, type=int,
+    parser.add_argument('--log_step', default=5, type=int,
                         help='Number of steps to print and record the log.')
-    parser.add_argument('--val_step', default=500, type=int,
+    parser.add_argument('--val_step', default=50, type=int,
                         help='Number of steps to run validation.')
     parser.add_argument('--logger_name', default='runs/runX',
                         help='Path to save the model and Tensorboard log.')
@@ -111,6 +111,8 @@ def main():
     print("data load")
     # Construct the model
     model = VSE(opt)
+    total_params = sum(p.numel() for p in model.parameters())
+    print("model num of params :", total_params)
     print("model made")
     # optionally resume from a checkpoint
     if opt.resume:

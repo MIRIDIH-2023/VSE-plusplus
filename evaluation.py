@@ -208,8 +208,10 @@ def i2t(images, captions, npts=None, measure='cosine', return_ranks=False):
     Images: (5N, K) matrix of images
     Captions: (5N, K) matrix of captions
     """
+    num_captions = 1
+    
     if npts is None:
-        npts = images.shape[0] / 5
+        npts = int(images.shape[0] / num_captions)
     index_list = []
 
     ranks = numpy.zeros(npts)
@@ -217,14 +219,14 @@ def i2t(images, captions, npts=None, measure='cosine', return_ranks=False):
     for index in range(npts):
 
         # Get query image
-        im = images[5 * index].reshape(1, images.shape[1])
+        im = images[num_captions * index].reshape(1, images.shape[1])
 
         # Compute scores
         if measure == 'order':
             bs = 100
             if index % bs == 0:
-                mx = min(images.shape[0], 5 * (index + bs))
-                im2 = images[5 * index:mx:5]
+                mx = min(images.shape[0], num_captions * (index + bs))
+                im2 = images[num_captions * index:mx:num_captions]
                 d2 = order_sim(torch.Tensor(im2).cuda(),
                                torch.Tensor(captions).cuda())
                 d2 = d2.cpu().numpy()
@@ -236,7 +238,7 @@ def i2t(images, captions, npts=None, measure='cosine', return_ranks=False):
 
         # Score
         rank = 1e20
-        for i in range(5 * index, 5 * index + 5, 1):
+        for i in range(num_captions * index, num_captions * index + num_captions, 1):
             tmp = numpy.where(inds == i)[0][0]
             if tmp < rank:
                 rank = tmp
@@ -261,35 +263,37 @@ def t2i(images, captions, npts=None, measure='cosine', return_ranks=False):
     Images: (5N, K) matrix of images
     Captions: (5N, K) matrix of captions
     """
+    num_captions = 1
+    
     if npts is None:
-        npts = images.shape[0] / 5
-    ims = numpy.array([images[i] for i in range(0, len(images), 5)])
+        npts = int ( images.shape[0] / num_captions )
+    ims = numpy.array([images[i] for i in range(0, len(images), num_captions)])
 
-    ranks = numpy.zeros(5 * npts)
-    top1 = numpy.zeros(5 * npts)
+    ranks = numpy.zeros(num_captions * npts)
+    top1 = numpy.zeros(num_captions * npts)
     for index in range(npts):
 
         # Get query captions
-        queries = captions[5 * index:5 * index + 5]
+        queries = captions[num_captions * index:num_captions * index + num_captions]
 
         # Compute scores
         if measure == 'order':
             bs = 100
-            if 5 * index % bs == 0:
-                mx = min(captions.shape[0], 5 * index + bs)
-                q2 = captions[5 * index:mx]
+            if num_captions * index % bs == 0:
+                mx = min(captions.shape[0], num_captions * index + bs)
+                q2 = captions[num_captions * index:mx]
                 d2 = order_sim(torch.Tensor(ims).cuda(),
                                torch.Tensor(q2).cuda())
                 d2 = d2.cpu().numpy()
 
-            d = d2[:, (5 * index) % bs:(5 * index) % bs + 5].T
+            d = d2[:, (num_captions * index) % bs:(num_captions * index) % bs + num_captions].T
         else:
             d = numpy.dot(queries, ims.T)
         inds = numpy.zeros(d.shape)
         for i in range(len(inds)):
             inds[i] = numpy.argsort(d[i])[::-1]
-            ranks[5 * index + i] = numpy.where(inds[i] == index)[0][0]
-            top1[5 * index + i] = inds[i][0]
+            ranks[num_captions * index + i] = numpy.where(inds[i] == index)[0][0]
+            top1[num_captions * index + i] = inds[i][0]
 
     # Compute metrics
     r1 = 100.0 * len(numpy.where(ranks < 1)[0]) / len(ranks)
