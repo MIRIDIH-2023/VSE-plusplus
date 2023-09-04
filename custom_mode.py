@@ -24,13 +24,12 @@ def EncoderImage(data_name, img_dim, embed_size, finetune=False,
     precomputed image features, `EncoderImagePrecomp`, or an encoder that
     computes image features on the fly `EncoderImageFull`.
     """
-    if data_name.endswith('_precomp'):
-        img_enc = EncoderImagePrecomp(
-            img_dim, embed_size, use_abs, no_imgnorm)
-    else:
+    if data_name=='custom':
         img_enc = EncoderImageFull(
             embed_size, finetune, cnn_type, use_abs, no_imgnorm)
-
+    else:
+        img_enc = None
+        
     return img_enc
 
 
@@ -131,55 +130,6 @@ class EncoderImageFull(nn.Module):
         return features
 
 
-class EncoderImagePrecomp(nn.Module):
-
-    def __init__(self, img_dim, embed_size, use_abs=False, no_imgnorm=False):
-        super(EncoderImagePrecomp, self).__init__()
-        self.embed_size = embed_size
-        self.no_imgnorm = no_imgnorm
-        self.use_abs = use_abs
-
-        self.fc = nn.Linear(img_dim, embed_size)
-
-        self.init_weights()
-
-    def init_weights(self):
-        """Xavier initialization for the fully connected layer
-        """
-        r = np.sqrt(6.) / np.sqrt(self.fc.in_features +
-                                  self.fc.out_features)
-        self.fc.weight.data.uniform_(-r, r)
-        self.fc.bias.data.fill_(0)
-
-    def forward(self, images):
-        """Extract image feature vectors."""
-        # assuming that the precomputed features are already l2-normalized
-
-        features = self.fc(images)
-
-        # normalize in the joint embedding space
-        if not self.no_imgnorm:
-            features = l2norm(features)
-
-        # take the absolute value of embedding (used in order embeddings)
-        if self.use_abs:
-            features = torch.abs(features)
-
-        return features
-
-    def load_state_dict(self, state_dict):
-        """Copies parameters. overwritting the default one to
-        accept state_dict from Full model
-        """
-        own_state = self.state_dict()
-        new_state = OrderedDict()
-        for name, param in state_dict.items():
-            if name in own_state:
-                new_state[name] = param
-
-        super(EncoderImagePrecomp, self).load_state_dict(new_state)
-
-
 # tutorials/08 - Language Model
 # RNN Based Language Model
 class EncoderText(nn.Module):
@@ -217,42 +167,6 @@ class EncoderText(nn.Module):
         I = Variable(I.expand(x.size(0), 1, self.embed_size)-1).cuda()
         out = torch.gather(padded[0], 1, I).squeeze(1)
 
-        # normalization in the joint embedding space
-        out = l2norm(out)
-
-        # take absolute value, used by order embeddings
-        if self.use_abs:
-            out = torch.abs(out)
-
-        return out
-
-from transformers import BertModel
-
-class EncoderTextBert(nn.Module):
-
-    def __init__(self, vocab_size, word_dim, embed_size, num_layers,
-                 use_abs=False):
-        super(EncoderTextBert, self).__init__()
-        self.use_abs = use_abs
-        self.embed_size = embed_size
-
-        self.bert = BertModel.from_pretrained("kykim/bert-kor-base")
-        
-        self.linear = nn.Linear(768, self.embed_size)
-        
-        self.init_weights()
-
-    def init_weights(self):
-        self.linear.weight.data.uniform_(-0.1,0.1)
-
-    def forward(self, x, lengths):
-        """Handles variable size captions
-        """
-        # Embed word ids to vectors
-        bert_attention_mask = (x != 0).float()
-        bert_emb = self.bert(x, bert_attention_mask)
-        bert_emb = bert_emb[0]
-        out = self.linear(bert_emb)
         # normalization in the joint embedding space
         out = l2norm(out)
 
@@ -323,12 +237,6 @@ class ContrastiveLoss(nn.Module):
         return cost_s.sum() + cost_im.sum()
 
 
-
-
-
-
-
-
 class VSE(object):
     """
     rkiros/uvs model
@@ -342,7 +250,7 @@ class VSE(object):
                                     opt.finetune, opt.cnn_type,
                                     use_abs=opt.use_abs,
                                     no_imgnorm=opt.no_imgnorm)
-        self.txt_enc = EncoderTextBert(opt.vocab_size, opt.word_dim,
+        self.txt_enc = EncoderText(opt.vocab_size, opt.word_dim,
                                    opt.embed_size, opt.num_layers,
                                    use_abs=opt.use_abs)
         if torch.cuda.is_available():
