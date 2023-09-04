@@ -251,8 +251,9 @@ class EncoderTextBert(nn.Module):
         # Embed word ids to vectors
         bert_attention_mask = (x != 0).float()
         bert_emb = self.bert(x, bert_attention_mask)
-        bert_emb = bert_emb[0]
-        out = self.linear(bert_emb)
+        bert_emb = bert_emb[0] #[batch, length, 768]
+        bert_cls = bert_emb[:,0] #[batch, 768]
+        out = self.linear(bert_cls)
         # normalization in the joint embedding space
         out = l2norm(out)
 
