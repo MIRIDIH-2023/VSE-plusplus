@@ -150,7 +150,8 @@ class CustomDatasetBert(data.Dataset):
         while len(return_list)==0:
             
             keyword = data_list[index]['keyword']
-
+            keyword = random.shuffle(keyword)
+            
             if len(keyword) == 0: #if has error, pick another index
                 index = random.randint(0,len(data_list)-1)
                 continue
