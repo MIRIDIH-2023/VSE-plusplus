@@ -97,6 +97,9 @@ class CustomDatasetBert(data.Dataset):
 
 
     def __getitem__(self, index):
+        
+        index = index//5
+        
         if self.train:
             index+=self.validation_len #앞 1000개는 validation
         
@@ -149,7 +152,6 @@ class CustomDatasetBert(data.Dataset):
         Returns:
             _type_: annotation list
         """
-        index = index//5
         
         return_list = []
         while len(return_list)==0:
