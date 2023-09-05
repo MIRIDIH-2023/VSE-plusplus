@@ -36,7 +36,7 @@ def main():
                         help='Number of training epochs.')
     parser.add_argument('--batch_size', default=128, type=int,
                         help='Size of a training mini-batch.')
-    parser.add_argument('--word_dim', default=768, type=int, #
+    parser.add_argument('--word_dim', default=300, type=int, #
                         help='Dimensionality of the word embedding.')
     parser.add_argument('--embed_size', default=1024, type=int,
                         help='Dimensionality of the joint embedding.')
