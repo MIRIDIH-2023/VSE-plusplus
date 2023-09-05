@@ -208,7 +208,7 @@ def i2t(images, captions, npts=None, measure='cosine', return_ranks=False):
     Images: (5N, K) matrix of images
     Captions: (5N, K) matrix of captions
     """
-    num_captions = 1
+    num_captions = 5
     
     if npts is None:
         npts = int(images.shape[0] / num_captions)
@@ -263,7 +263,7 @@ def t2i(images, captions, npts=None, measure='cosine', return_ranks=False):
     Images: (5N, K) matrix of images
     Captions: (5N, K) matrix of captions
     """
-    num_captions = 1
+    num_captions = 5
     
     if npts is None:
         npts = int ( images.shape[0] / num_captions )
