@@ -327,8 +327,6 @@ class ContrastiveLoss(nn.Module):
 
 
 
-
-
 class VSE(object):
     """
     rkiros/uvs model

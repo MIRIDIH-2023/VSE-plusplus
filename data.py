@@ -346,13 +346,13 @@ def get_transform(data_name, split_name, opt):
     """
     t_list = []
     if split_name == 'train':
-        t_list = [transforms.Resize(224),
+        t_list = [transforms.Resize((224,224)),
                   transforms.RandomVerticalFlip() ,
                   transforms.RandomHorizontalFlip()]
     elif split_name == 'val':
-        t_list = [transforms.Resize(224), ] 
+        t_list = [transforms.Resize((224,224)), ] 
     elif split_name == 'test':
-        t_list = [transforms.Resize(224), ]
+        t_list = [transforms.Resize((224,224)), ]
 
     t_end = [transforms.ToTensor(), normalizer]
     transform = transforms.Compose(t_list + t_end)
