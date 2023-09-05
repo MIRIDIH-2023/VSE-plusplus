@@ -342,7 +342,7 @@ class VSE(object):
                                     opt.finetune, opt.cnn_type,
                                     use_abs=opt.use_abs,
                                     no_imgnorm=opt.no_imgnorm)
-        self.txt_enc = EncoderText(opt.vocab_size, opt.word_dim,
+        self.txt_enc = EncoderTextBert(opt.vocab_size, opt.word_dim,
                                    opt.embed_size, opt.num_layers,
                                    use_abs=opt.use_abs)
         if torch.cuda.is_available():
@@ -360,7 +360,7 @@ class VSE(object):
             params += list(self.img_enc.cnn.parameters())
         self.params = params
 
-        self.optimizer = torch.optim.Adam(params, lr=opt.learning_rate)
+        self.optimizer = torch.optim.AdamW(params, lr=opt.learning_rate)
 
         self.Eiters = 0
 

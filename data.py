@@ -332,7 +332,8 @@ def get_precomp_loader(data_path, data_split, vocab, opt, batch_size=100,
 
 def get_transform(data_name, split_name, opt):
     normalizer = transforms.Normalize(mean=[0.485, 0.456, 0.406],
-                                      std=[0.229, 0.224, 0.225])
+                                   std=[0.229, 0.224, 0.225])
+    """
     t_list = []
     if split_name == 'train':
         t_list = [transforms.Resize(256),
@@ -342,6 +343,16 @@ def get_transform(data_name, split_name, opt):
         t_list = [transforms.Resize(256), transforms.CenterCrop(224)]
     elif split_name == 'test':
         t_list = [transforms.Resize(256), transforms.CenterCrop(224)]
+    """
+    t_list = []
+    if split_name == 'train':
+        t_list = [transforms.Resize(336),
+                  transforms.RandomVerticalFlip() ,
+                  transforms.RandomHorizontalFlip()]
+    elif split_name == 'val':
+        t_list = [transforms.Resize(336), ] 
+    elif split_name == 'test':
+        t_list = [transforms.Resize(336), ]
 
     t_end = [transforms.ToTensor(), normalizer]
     transform = transforms.Compose(t_list + t_end)
