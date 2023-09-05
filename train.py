@@ -62,7 +62,7 @@ def main():
                         help='path to latest checkpoint (default: none)')
     parser.add_argument('--max_violation', action='store_true',
                         help='Use max instead of sum in the rank loss.')
-    parser.add_argument('--img_dim', default=4096, type=int,
+    parser.add_argument('--img_dim', default=2048, type=int,
                         help='Dimensionality of the image embedding.')
     parser.add_argument('--finetune', action='store_true',
                         help='Fine-tune the image encoder.')
