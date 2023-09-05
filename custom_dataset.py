@@ -86,11 +86,14 @@ class CustomDatasetBert(data.Dataset):
         self.vocab = vocab
 
     def __len__(self):
+        _len = 0
         if self.train:
-            return self.image_len - self.validation_len
-        if self.val:
-            return self.validation_len
-        return self.image_len
+            _len = self.image_len - self.validation_len
+        elif self.val:
+            _len = self.validation_len
+        else:
+            _len = self.image_len
+        return _len * 5
 
 
     def __getitem__(self, index):
@@ -146,6 +149,8 @@ class CustomDatasetBert(data.Dataset):
         Returns:
             _type_: annotation list
         """
+        index = index//5
+        
         return_list = []
         while len(return_list)==0:
             
